@@ -1,0 +1,137 @@
+{
+  "unknown": {
+    "versionFramework": "4.9.1",
+    "command": [],
+    "options": {},
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
+  },
+  "/Users/stian/IdeaProjects/KaggleAutomationTS/serverless.yml": {
+    "versionFramework": "4.9.1",
+    "servicePath": "/Users/stian/IdeaProjects/KaggleAutomationTS/serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "org": "stian",
+      "service": "kaggle-automation-ts",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs23.x",
+        "region": "us-east-1",
+        "stage": "dev",
+        "iamRoleStatements": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "lambda:InvokeFunction"
+            ],
+            "Resource": [
+              "arn:aws:lambda:us-east-1:${aws:accountId}:function:kaggle-automation-ts-dev-kaggleDownload",
+              "arn:aws:lambda:us-east-1:${aws:accountId}:function:kaggle-automation-ts-dev-dataCleansing",
+              "arn:aws:lambda:us-east-1:${aws:accountId}:function:kaggle-automation-ts-dev-herokuDataInsert"
+            ]
+          }
+        ],
+        "environment": {
+          "S3_BUCKET": "kaggle-automation-ts-kaggle-bucket-dev",
+          "BASE_UPLOAD_FILE_KEY": "kaggle",
+          "ORIGINAL_FILE_NAME": "imdb_top_1000.csv"
+        }
+      },
+      "functions": {
+        "kaggleDownload": {
+          "handler": "handler.kaggleDownload",
+          "description": "Downloads IMDB dataset from Kaggle and uploads it to S3.",
+          "iamRoleStatements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ssm:GetParameter",
+                "ssm:DescribeParameters"
+              ],
+              "Resource": [
+                "arn:aws:ssm:us-east-1:${aws:accountId}:parameter/kaggle/username",
+                "arn:aws:ssm:us-east-1:${aws:accountId}:parameter/kaggle/key"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "kms:Decrypt"
+              ],
+              "Resource": [
+                "arn:aws:kms:us-east-1:${aws:accountId}:key/84ecd075-f001-4bb8-abb4-d9670bf40fca"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:PutObject"
+              ],
+              "Resource": [
+                "arn:aws:s3:::kaggle-automation-ts-kaggle-bucket-dev/*"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs23.x",
+      "region": "us-east-1",
+      "stage": "dev",
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "lambda:InvokeFunction"
+          ],
+          "Resource": [
+            "arn:aws:lambda:us-east-1:${aws:accountId}:function:kaggle-automation-ts-dev-kaggleDownload",
+            "arn:aws:lambda:us-east-1:${aws:accountId}:function:kaggle-automation-ts-dev-dataCleansing",
+            "arn:aws:lambda:us-east-1:${aws:accountId}:function:kaggle-automation-ts-dev-herokuDataInsert"
+          ]
+        }
+      ],
+      "environment": {
+        "S3_BUCKET": "kaggle-automation-ts-kaggle-bucket-dev",
+        "BASE_UPLOAD_FILE_KEY": "kaggle",
+        "ORIGINAL_FILE_NAME": "imdb_top_1000.csv"
+      }
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "error": {
+      "message": "Failed to resolve variable 'accountId' with resolver 'ssm' and provider 'default-aws-credential-resolver': Error: Failed to resolve AWS account ID: The security token included in the request is invalid",
+      "stack": "Error: Failed to resolve variable 'accountId' with resolver 'ssm' and provider 'default-aws-credential-resolver': Error: Failed to resolve AWS account ID: The security token included in the request is invalid\n    at #resolveKey (file:///Users/stian/.serverless/releases/4.9.1/package/dist/sf-core.js:550:25539)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async _ResolverManager.resolve (file:///Users/stian/.serverless/releases/4.9.1/package/dist/sf-core.js:550:31529)\n    at async #handlePlaceholderNode (file:///Users/stian/.serverless/releases/4.9.1/package/dist/sf-core.js:550:30074)\n    at async file:///Users/stian/.serverless/releases/4.9.1/package/dist/sf-core.js:550:27946\n    at async processNodeAndHandleCompletion (file:///Users/stian/.serverless/releases/4.9.1/package/dist/sf-core.js:550:16727)",
+      "code": "RESOLVER_RESOLVE_VARIABLE_ERROR"
+    },
+    "serviceRawFile": "# \"org\" ensures this Service is used with the correct Serverless Framework Access Key.\norg: stian\n# \"service\" is the name of this project. This will also be added to your AWS resource names.\nservice: kaggle-automation-ts\n\nprovider:\n  name: aws\n  runtime: nodejs23.x\n  region: us-east-1\n  stage: ${opt:stage, 'dev'}\n  iamRoleStatements:\n    - Effect: Allow\n      Action:\n        - lambda:InvokeFunction\n      Resource:\n        - arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:${self:service}-${self:provider.stage}-kaggleDownload\n        - arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:${self:service}-${self:provider.stage}-dataCleansing\n        - arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:${self:service}-${self:provider.stage}-herokuDataInsert\n  environment:\n    S3_BUCKET: ${self:service}-kaggle-bucket-${self:provider.stage}\n    BASE_UPLOAD_FILE_KEY: \"kaggle\"\n    ORIGINAL_FILE_NAME: \"imdb_top_1000.csv\"\n  \n\nfunctions:\n  kaggleDownload:\n    handler: handler.kaggleDownload\n    description: Downloads IMDB dataset from Kaggle and uploads it to S3.\n    iamRoleStatements:\n      - Effect: Allow\n        Action:\n          - ssm:GetParameter\n          - ssm:DescribeParameters\n        Resource:\n          - arn:aws:ssm:${self:provider.region}:${aws:accountId}:parameter/kaggle/username\n          - arn:aws:ssm:${self:provider.region}:${aws:accountId}:parameter/kaggle/key\n      - Effect: Allow\n        Action:\n          - kms:Decrypt\n        Resource:\n          - arn:aws:kms:${self:provider.region}:${aws:accountId}:key/84ecd075-f001-4bb8-abb4-d9670bf40fca\n      - Effect: Allow\n        Action:\n          - s3:PutObject\n        Resource:\n          - arn:aws:s3:::${self:service}-kaggle-bucket-${self:provider.stage}/*\n",
+    "command": [
+      "invoke",
+      "local"
+    ],
+    "options": {
+      "function": "kaggleDownload"
+    },
+    "orgId": "67d3ab2b-0f2f-4080-a0ef-763eb6002596",
+    "orgName": "stian",
+    "userId": "Lrjq816n3nvFZLhHKM",
+    "userName": "stian",
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
+  }
+}
