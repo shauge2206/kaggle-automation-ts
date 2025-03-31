@@ -1,0 +1,25 @@
+# Node modules
+node_modules/
+
+# TypeScript build output
+dist/
+build/
+*.tsbuildinfo
+
+# Serverless Framework
+.serverless/
+
+# Environment files
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# Mac system files
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
