@@ -1,11 +1,11 @@
-# "org" ensures this Service is used with the correct Serverless Framework Access Key.
-org: stian
-# "service" is the name of this project. This will also be added to your AWS resource names.
 service: kaggle-automation-ts
+
+plugins:
+  - serverless-iam-roles-per-function
 
 provider:
   name: aws
-  runtime: nodejs23.x
+  runtime: nodejs22.x
   region: us-east-1
   stage: ${opt:stage, 'dev'}
   iamRoleStatements:
@@ -18,13 +18,13 @@ provider:
         - arn:aws:lambda:${self:provider.region}:${aws:accountId}:function:${self:service}-${self:provider.stage}-herokuDataInsert
   environment:
     S3_BUCKET: ${self:service}-kaggle-bucket-${self:provider.stage}
-    BASE_UPLOAD_FILE_KEY: "kaggle"
+    BASE_UPLOAD_FILE_NAME: "kaggle"
     ORIGINAL_FILE_NAME: "imdb_top_1000.csv"
-  
+
 
 functions:
   kaggleDownload:
-    handler: handler.kaggleDownload
+    handler: func/handler.download
     description: Downloads IMDB dataset from Kaggle and uploads it to S3.
     iamRoleStatements:
       - Effect: Allow
@@ -44,3 +44,9 @@ functions:
           - s3:PutObject
         Resource:
           - arn:aws:s3:::${self:service}-kaggle-bucket-${self:provider.stage}/*
+    environment:
+      KAGGLE_DATASET_USERNAME: "harshitshankhdhar"
+      KAGGLE_DATASET_SLUG: "imdb-dataset-of-top-1000-movies-and-tv-shows"
+      KAGGLE_BASE_URL: "https://www.kaggle.com/api/v1"
+      KAGGLE_PERSONAL_USERNAME: ${ssm:/kaggle/username}
+      KAGGLE_PERSONAL_KEY: ${ssm:/kaggle/key}
