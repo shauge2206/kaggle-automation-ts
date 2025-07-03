@@ -12,12 +12,15 @@
   "type": "commonjs",
   "devDependencies": {
     "@types/node": "^22.13.17",
+    "@types/unzipper": "^0.10.11",
     "esbuild": "^0.25.2",
     "serverless-iam-roles-per-function": "^3.2.0",
     "typescript": "^5.8.2"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.787.0",
-    "axios": "^1.8.4"
+    "@aws-sdk/client-ssm": "^3.840.0",
+    "axios": "^1.8.4",
+    "unzipper": "^0.12.3"
   }
 }
